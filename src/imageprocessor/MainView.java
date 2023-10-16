@@ -276,12 +276,12 @@ public class MainView extends javax.swing.JFrame {
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_sequentialTime.setForeground(new java.awt.Color(218, 218, 218));
         lbl_sequentialTime.setText("Time:");
-        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 390, -1, 40));
+        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 420, -1, 40));
 
         lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_concurrentTime.setForeground(new java.awt.Color(218, 218, 218));
         lbl_concurrentTime.setText("Time:");
-        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, -1, 40));
+        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, -1, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
