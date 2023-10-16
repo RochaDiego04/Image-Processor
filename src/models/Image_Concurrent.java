@@ -1,4 +1,3 @@
-
 package models;
 
 import java.awt.Color;
@@ -7,30 +6,33 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 
 
-public class Image {
+public class Image_Concurrent {
     public static final int allowedWidth = 1024;
-    public static final int allowedHeight = 720;
-    private Color[][] array; //Pixels array
+    public static final int allowedHeight = 820;
+    private Color[][] array;
     private int width;
     private int height;
-    
-    public Image(String file) {
+
+    public Image_Concurrent(String file) {
         array = new Color[allowedHeight][allowedWidth]; // Initialize pixels array
         loadImage(file);
     }
-    
-    public void loadImage(String file){
+
+    public void loadImage(String file) {
         BufferedImage bf = null;
         try {
             bf = ImageIO.read(new File(file));
         } catch (IOException ex) {
-            Logger.getLogger(Image.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Image_Concurrent.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if (bf.getWidth() < allowedWidth) { // resize image if exceeds max width
@@ -54,13 +56,13 @@ public class Image {
             }
         }
     }
-    
-    public BufferedImage resize(String file, double percentage){
+
+    public BufferedImage resize(String file, double percentage) {
         BufferedImage bf = null;
         try {
             bf = ImageIO.read(new File(file));
         } catch (IOException ex) {
-            Logger.getLogger(Image.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Image_Concurrent.class.getName()).log(Level.SEVERE, null, ex);
         }
         int originalWidth = bf.getWidth();
         int originalHeight = bf.getHeight();
@@ -73,8 +75,8 @@ public class Image {
         g.dispose();
         return newImage;
     }
-    
-    public void binarizeImage(double threshold){ //go through matrix and
+
+    public void binarizeImage(double threshold) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 Color pixel = array[i][j];
@@ -87,8 +89,8 @@ public class Image {
             }
         }
     }
-    
-    public BufferedImage printImage(){
+
+    public BufferedImage printImage() {
         BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -97,7 +99,6 @@ public class Image {
         }
         return output;
     }
-    
 
     public static void main(String[] args) throws IOException {
         String inputPath = "src/images/input_images/";
@@ -110,28 +111,45 @@ public class Image {
         if (!outputDirectory.exists()) {
             outputDirectory.mkdirs();
         }
-        
-        long startTime = System.currentTimeMillis(); // Time the task(s)
-        
-        File[] imageFiles = inputDirectory.listFiles(); // get a list of files at input directory
+
+        File[] imageFiles = inputDirectory.listFiles();
 
         if (imageFiles != null) {
+            int numThreads = Runtime.getRuntime().availableProcessors(); // Obtener el número de núcleos disponibles
+
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+            long startTime = System.currentTimeMillis();
+
             for (File imageFile : imageFiles) {
-                if (imageFile.isFile()) { // validation of image formats (.jpg, .png) is done when uploading files
+                if (imageFile.isFile()) {
                     String inputImage = imageFile.getAbsolutePath();
                     String outputImage = outputPath + imageFile.getName();
 
-                    Image obj = new Image(inputImage);
-                    obj.binarizeImage(100);
-                    BufferedImage img = obj.printImage();
-                    ImageIO.write(img, "jpg", new File(outputImage));
+                    executor.submit(() -> {
+                        Image_Concurrent obj = new Image_Concurrent(inputImage);
+                        obj.binarizeImage(100);
+                        BufferedImage img = obj.printImage();
+                        try {
+                            ImageIO.write(img, "jpg", new File(outputImage));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                    System.out.println("Processed: " + imageFile.getName());
+                        System.out.println("Processed: " + imageFile.getName());
+                    });
                 }
             }
+
+            executor.shutdown();
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            long parallelTime = System.currentTimeMillis() - startTime;
+            System.out.println("Parallel time " + parallelTime + "ms");
         }
-       
-        long sequentialTime  = System.currentTimeMillis() - startTime; // Finisihing task timing
-        System.out.println("Sequential time " + sequentialTime + "ms");
     }
 }
