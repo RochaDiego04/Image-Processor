@@ -98,40 +98,4 @@ public class Image_Sequential {
         return output;
     }
     
-
-    public static void main(String[] args) throws IOException {
-        String inputPath = "src/images/input_images/";
-        String outputPath = "src/images/output_images/";
-
-        File inputDirectory = new File(inputPath);
-        File outputDirectory = new File(outputPath);
-
-        // Ensure that the output directory exists
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
-        }
-        
-        long startTime = System.currentTimeMillis(); // Time the task(s)
-        
-        File[] imageFiles = inputDirectory.listFiles(); // get a list of files at input directory
-
-        if (imageFiles != null) {
-            for (File imageFile : imageFiles) {
-                if (imageFile.isFile()) { // validation of image formats (.jpg, .png) is done when uploading files
-                    String inputImage = imageFile.getAbsolutePath();
-                    String outputImage = outputPath + imageFile.getName();
-
-                    Image_Sequential obj = new Image_Sequential(inputImage);
-                    obj.binarizeImage(100);
-                    BufferedImage img = obj.printImage();
-                    ImageIO.write(img, "jpg", new File(outputImage));
-
-                    System.out.println("Processed: " + imageFile.getName());
-                }
-            }
-        }
-       
-        long sequentialTime  = System.currentTimeMillis() - startTime; // Finisihing task timing
-        System.out.println("Sequential time " + sequentialTime + "ms");
-    }
 }

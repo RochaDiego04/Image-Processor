@@ -1,12 +1,15 @@
 package views;
 
 import classes.FileDeleter;
+import classes.Image_Concurrent;
+import classes.Image_Sequential;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DnDConstants;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.io.File;
@@ -14,6 +17,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 
 
@@ -29,7 +38,7 @@ public class MainView extends javax.swing.JFrame {
     public MainView() {
         initComponents();
     //////////////////////////////////////////////////////////////    
-    // Asocia un DropTarget a jLabel1
+    // Associate a DropTarget to jLabel1
     DropTarget dropTarget = new DropTarget(jLabel1, DnDConstants.ACTION_COPY, new DropTargetAdapter() {
     @Override
     public void drop(DropTargetDropEvent event) {
@@ -38,13 +47,13 @@ public class MainView extends javax.swing.JFrame {
         try {
             List<File> files = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
             for (File file : files) {
-                // Verificar si el archivo es una imagen antes de copiarlo
+                // Verify if file is an image before copying it
                 if (isImageFile(file)) {
-                    // Define la ruta de destino (images.output_images)
+                    // Define destination folder (images.output_images)
                     File destinationFolder = new File("src/images/input_images");
                     destinationFolder.mkdirs();
 
-                    // Copiar el archivo a la carpeta de destino
+                    // Copy the file into the destination folder
                     Path sourcePath = file.toPath();
                     Path destinationPath = new File(destinationFolder, file.getName()).toPath();
                     Files.copy(sourcePath, destinationPath);
@@ -72,7 +81,8 @@ public class MainView extends javax.swing.JFrame {
         pnl_header = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         lbl_title = new javax.swing.JLabel();
-        btn_clear = new javax.swing.JButton();
+        btn_clear_input = new javax.swing.JButton();
+        btn_clear_output = new javax.swing.JButton();
         lbl_concurrent = new javax.swing.JLabel();
         lbl_sequential = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -111,25 +121,45 @@ public class MainView extends javax.swing.JFrame {
         lbl_title.setText("Image Binarizer");
         pnl_header.add(lbl_title, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 470, 60));
 
-        btn_clear.setBackground(new java.awt.Color(45, 45, 82));
-        btn_clear.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btn_clear.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear.setText("Clear All");
-        btn_clear.setToolTipText("");
-        btn_clear.setAlignmentX(0.5F);
-        btn_clear.setBorderPainted(false);
-        btn_clear.setFocusPainted(false);
-        btn_clear.addMouseListener(new java.awt.event.MouseAdapter() {
+        btn_clear_input.setBackground(new java.awt.Color(45, 45, 82));
+        btn_clear_input.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_clear_input.setForeground(new java.awt.Color(255, 255, 255));
+        btn_clear_input.setText("Clear Input Img");
+        btn_clear_input.setToolTipText("");
+        btn_clear_input.setAlignmentX(0.5F);
+        btn_clear_input.setBorderPainted(false);
+        btn_clear_input.setFocusPainted(false);
+        btn_clear_input.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_clearMouseEntered(evt);
+                btn_clear_inputMouseEntered(evt);
             }
         });
-        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+        btn_clear_input.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_clearActionPerformed(evt);
+                btn_clear_inputActionPerformed(evt);
             }
         });
-        pnl_header.add(btn_clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 110, 120, 40));
+        pnl_header.add(btn_clear_input, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 90, 130, 40));
+
+        btn_clear_output.setBackground(new java.awt.Color(60, 44, 82));
+        btn_clear_output.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_clear_output.setForeground(new java.awt.Color(255, 255, 255));
+        btn_clear_output.setText("Clear Output Img");
+        btn_clear_output.setToolTipText("");
+        btn_clear_output.setAlignmentX(0.5F);
+        btn_clear_output.setBorderPainted(false);
+        btn_clear_output.setFocusPainted(false);
+        btn_clear_output.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_clear_outputMouseEntered(evt);
+            }
+        });
+        btn_clear_output.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clear_outputActionPerformed(evt);
+            }
+        });
+        pnl_header.add(btn_clear_output, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 140, 130, 40));
 
         pnl_background.add(pnl_header, new org.netbeans.lib.awtextra.AbsoluteConstraints(-4, -6, 910, 210));
 
@@ -188,6 +218,11 @@ public class MainView extends javax.swing.JFrame {
                 btn_startSequentialMouseEntered(evt);
             }
         });
+        btn_startSequential.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_startSequentialActionPerformed(evt);
+            }
+        });
         pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 300, 160, 60));
 
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
@@ -235,19 +270,121 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btn_startSequentialMouseEntered
 
-    private void btn_clearMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clearMouseEntered
+    private void btn_clear_inputMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clear_inputMouseEntered
         // TODO add your handling code here:
-    }//GEN-LAST:event_btn_clearMouseEntered
+    }//GEN-LAST:event_btn_clear_inputMouseEntered
 
-    private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
+    private void btn_clear_inputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clear_inputActionPerformed
         FileDeleter fileDeleter = new FileDeleter();
         String folderPath = "src/images/input_images/";
         fileDeleter.deleteAllFilesInFolder(folderPath);
-    }//GEN-LAST:event_btn_clearActionPerformed
+    }//GEN-LAST:event_btn_clear_inputActionPerformed
 
     private void btn_startConcurrentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startConcurrentActionPerformed
+        String inputPath = "src/images/input_images/";
+        String outputPath = "src/images/output_images/";
 
+        File inputDirectory = new File(inputPath);
+        File outputDirectory = new File(outputPath);
+
+        // Ensure that the output directory exists
+        if (!outputDirectory.exists()) {
+            outputDirectory.mkdirs();
+        }
+
+        File[] imageFiles = inputDirectory.listFiles();
+
+        if (imageFiles != null) {
+            int numThreads = Runtime.getRuntime().availableProcessors(); // Get the number of available cores
+
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+            long startTime = System.currentTimeMillis();
+
+            for (File imageFile : imageFiles) {
+                if (imageFile.isFile()) {
+                    String inputImage = imageFile.getAbsolutePath();
+                    String outputImage = outputPath + imageFile.getName();
+
+                    executor.submit(() -> {
+                        Image_Concurrent obj = new Image_Concurrent(inputImage);
+                        obj.binarizeImage(100);
+                        BufferedImage img = obj.printImage();
+                        try {
+                            ImageIO.write(img, "jpg", new File(outputImage));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Get the current thread's name or identifier
+                        String threadName = Thread.currentThread().getName();
+                        System.out.println("Processed: " + imageFile.getName() + " by thread " + threadName);
+                    });
+
+                }
+            }
+
+            executor.shutdown();
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            long concurrentTime = System.currentTimeMillis() - startTime;
+            System.out.println("Concurrent time " + concurrentTime + "ms");
+        }
     }//GEN-LAST:event_btn_startConcurrentActionPerformed
+
+    private void btn_startSequentialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startSequentialActionPerformed
+        String inputPath = "src/images/input_images/";
+        String outputPath = "src/images/output_images/";
+
+        File inputDirectory = new File(inputPath);
+        File outputDirectory = new File(outputPath);
+
+        // Ensure that the output directory exists
+        if (!outputDirectory.exists()) {
+            outputDirectory.mkdirs();
+        }
+        
+        long startTime = System.currentTimeMillis(); // Time the task(s)
+        
+        File[] imageFiles = inputDirectory.listFiles(); // get a list of files at input directory
+
+        if (imageFiles != null) {
+            for (File imageFile : imageFiles) {
+                if (imageFile.isFile()) { // validation of image formats (.jpg, .png) is done when uploading files
+                    String inputImage = imageFile.getAbsolutePath();
+                    String outputImage = outputPath + imageFile.getName();
+
+                    Image_Sequential obj = new Image_Sequential(inputImage);
+                    obj.binarizeImage(100);
+                    BufferedImage img = obj.printImage();
+                    try {
+                        ImageIO.write(img, "jpg", new File(outputImage));
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    System.out.println("Processed: " + imageFile.getName());
+                }
+            }
+        }
+       
+        long sequentialTime  = System.currentTimeMillis() - startTime; // Finisihing task timing
+        System.out.println("Sequential time " + sequentialTime + "ms");
+    }//GEN-LAST:event_btn_startSequentialActionPerformed
+
+    private void btn_clear_outputMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clear_outputMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_clear_outputMouseEntered
+
+    private void btn_clear_outputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clear_outputActionPerformed
+        FileDeleter fileDeleter = new FileDeleter();
+        String folderPath = "src/images/output_images/";
+        fileDeleter.deleteAllFilesInFolder(folderPath);
+    }//GEN-LAST:event_btn_clear_outputActionPerformed
 
     /**
      * @param args the command line arguments
@@ -290,7 +427,8 @@ public class MainView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JButton btn_clear;
+    public javax.swing.JButton btn_clear_input;
+    public javax.swing.JButton btn_clear_output;
     public javax.swing.JButton btn_startConcurrent;
     public javax.swing.JButton btn_startSequential;
     private javax.swing.JLabel jLabel1;
