@@ -1,5 +1,6 @@
-package imageprocessor;
+package views;
 
+import classes.FileDeleter;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
@@ -71,30 +72,17 @@ public class MainView extends javax.swing.JFrame {
         pnl_header = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         lbl_title = new javax.swing.JLabel();
+        btn_clear = new javax.swing.JButton();
         lbl_concurrent = new javax.swing.JLabel();
         lbl_sequential = new javax.swing.JLabel();
-        pnl_thread1 = new javax.swing.JPanel();
-        lbl_thread1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtArea_thread1 = new javax.swing.JTextArea();
-        pnl_thread2 = new javax.swing.JPanel();
-        lbl_thread2 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtArea_thread2 = new javax.swing.JTextArea();
-        pnl_thread3 = new javax.swing.JPanel();
-        lbl_thread3 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtArea_thread3 = new javax.swing.JTextArea();
-        pnl_thread4 = new javax.swing.JPanel();
-        lbl_thread4 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        txtArea_thread4 = new javax.swing.JTextArea();
         jScrollPane5 = new javax.swing.JScrollPane();
         txtArea_sequential = new javax.swing.JTextArea();
         btn_startConcurrent = new javax.swing.JButton();
         btn_startSequential = new javax.swing.JButton();
         lbl_sequentialTime = new javax.swing.JLabel();
         lbl_concurrentTime = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        txtArea_concurrent = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -123,113 +111,37 @@ public class MainView extends javax.swing.JFrame {
         lbl_title.setText("Image Binarizer");
         pnl_header.add(lbl_title, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 470, 60));
 
+        btn_clear.setBackground(new java.awt.Color(45, 45, 82));
+        btn_clear.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_clear.setForeground(new java.awt.Color(255, 255, 255));
+        btn_clear.setText("Clear All");
+        btn_clear.setToolTipText("");
+        btn_clear.setAlignmentX(0.5F);
+        btn_clear.setBorderPainted(false);
+        btn_clear.setFocusPainted(false);
+        btn_clear.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_clearMouseEntered(evt);
+            }
+        });
+        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clearActionPerformed(evt);
+            }
+        });
+        pnl_header.add(btn_clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 110, 120, 40));
+
         pnl_background.add(pnl_header, new org.netbeans.lib.awtextra.AbsoluteConstraints(-4, -6, 910, 210));
 
         lbl_concurrent.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_concurrent.setForeground(new java.awt.Color(218, 218, 218));
         lbl_concurrent.setText("Concurrent");
-        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 260, -1, -1));
+        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 260, -1, -1));
 
         lbl_sequential.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_sequential.setForeground(new java.awt.Color(218, 218, 218));
         lbl_sequential.setText("Sequential");
-        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 260, -1, -1));
-
-        pnl_thread1.setBackground(new java.awt.Color(5, 5, 7));
-        pnl_thread1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(204, 204, 204), new java.awt.Color(255, 255, 255), null, new java.awt.Color(204, 204, 204)));
-        pnl_thread1.setPreferredSize(new java.awt.Dimension(340, 90));
-        pnl_thread1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lbl_thread1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbl_thread1.setForeground(new java.awt.Color(255, 255, 255));
-        lbl_thread1.setText("Thread1");
-        pnl_thread1.add(lbl_thread1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, 30));
-
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        txtArea_thread1.setEditable(false);
-        txtArea_thread1.setBackground(new java.awt.Color(11, 12, 16));
-        txtArea_thread1.setColumns(20);
-        txtArea_thread1.setForeground(new java.awt.Color(255, 255, 255));
-        txtArea_thread1.setRows(5);
-        txtArea_thread1.setPreferredSize(new java.awt.Dimension(220, 66));
-        jScrollPane1.setViewportView(txtArea_thread1);
-
-        pnl_thread1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 7, 200, 100));
-
-        pnl_background.add(pnl_thread1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 540, 350, 110));
-
-        pnl_thread2.setBackground(new java.awt.Color(5, 5, 7));
-        pnl_thread2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(204, 204, 204), new java.awt.Color(255, 255, 255), null, new java.awt.Color(204, 204, 204)));
-        pnl_thread2.setPreferredSize(new java.awt.Dimension(340, 90));
-        pnl_thread2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lbl_thread2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbl_thread2.setForeground(new java.awt.Color(255, 255, 255));
-        lbl_thread2.setText("Thread2");
-        pnl_thread2.add(lbl_thread2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, 30));
-
-        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        txtArea_thread2.setEditable(false);
-        txtArea_thread2.setBackground(new java.awt.Color(11, 12, 16));
-        txtArea_thread2.setColumns(20);
-        txtArea_thread2.setForeground(new java.awt.Color(255, 255, 255));
-        txtArea_thread2.setRows(5);
-        txtArea_thread2.setPreferredSize(new java.awt.Dimension(220, 66));
-        jScrollPane2.setViewportView(txtArea_thread2);
-
-        pnl_thread2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 7, 200, 100));
-
-        pnl_background.add(pnl_thread2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 650, 350, 110));
-
-        pnl_thread3.setBackground(new java.awt.Color(5, 5, 7));
-        pnl_thread3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(204, 204, 204), new java.awt.Color(255, 255, 255), null, new java.awt.Color(204, 204, 204)));
-        pnl_thread3.setPreferredSize(new java.awt.Dimension(340, 90));
-        pnl_thread3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lbl_thread3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbl_thread3.setForeground(new java.awt.Color(255, 255, 255));
-        lbl_thread3.setText("Thread3");
-        pnl_thread3.add(lbl_thread3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, 30));
-
-        jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        txtArea_thread3.setEditable(false);
-        txtArea_thread3.setBackground(new java.awt.Color(11, 12, 16));
-        txtArea_thread3.setColumns(20);
-        txtArea_thread3.setForeground(new java.awt.Color(255, 255, 255));
-        txtArea_thread3.setRows(5);
-        txtArea_thread3.setPreferredSize(new java.awt.Dimension(220, 66));
-        jScrollPane3.setViewportView(txtArea_thread3);
-
-        pnl_thread3.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 7, 200, 100));
-
-        pnl_background.add(pnl_thread3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 760, 350, 110));
-
-        pnl_thread4.setBackground(new java.awt.Color(5, 5, 7));
-        pnl_thread4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(204, 204, 204), new java.awt.Color(255, 255, 255), null, new java.awt.Color(204, 204, 204)));
-        pnl_thread4.setPreferredSize(new java.awt.Dimension(340, 90));
-        pnl_thread4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lbl_thread4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbl_thread4.setForeground(new java.awt.Color(255, 255, 255));
-        lbl_thread4.setText("Thread4");
-        pnl_thread4.add(lbl_thread4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, 30));
-
-        jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        txtArea_thread4.setEditable(false);
-        txtArea_thread4.setBackground(new java.awt.Color(11, 12, 16));
-        txtArea_thread4.setColumns(20);
-        txtArea_thread4.setForeground(new java.awt.Color(255, 255, 255));
-        txtArea_thread4.setRows(5);
-        txtArea_thread4.setPreferredSize(new java.awt.Dimension(220, 66));
-        jScrollPane4.setViewportView(txtArea_thread4);
-
-        pnl_thread4.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 7, 200, 100));
-
-        pnl_background.add(pnl_thread4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 870, 350, 110));
+        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 260, -1, -1));
 
         jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -241,9 +153,9 @@ public class MainView extends javax.swing.JFrame {
         txtArea_sequential.setPreferredSize(new java.awt.Dimension(220, 66));
         jScrollPane5.setViewportView(txtArea_sequential);
 
-        pnl_background.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 540, 390, 440));
+        pnl_background.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 540, 390, 440));
 
-        btn_startConcurrent.setBackground(new java.awt.Color(51, 153, 0));
+        btn_startConcurrent.setBackground(new java.awt.Color(71, 104, 104));
         btn_startConcurrent.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btn_startConcurrent.setForeground(new java.awt.Color(255, 255, 255));
         btn_startConcurrent.setText("Start");
@@ -256,9 +168,14 @@ public class MainView extends javax.swing.JFrame {
                 btn_startConcurrentMouseEntered(evt);
             }
         });
-        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 300, 160, 60));
+        btn_startConcurrent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_startConcurrentActionPerformed(evt);
+            }
+        });
+        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 300, 160, 60));
 
-        btn_startSequential.setBackground(new java.awt.Color(51, 153, 0));
+        btn_startSequential.setBackground(new java.awt.Color(71, 104, 104));
         btn_startSequential.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btn_startSequential.setForeground(new java.awt.Color(255, 255, 255));
         btn_startSequential.setText("Start");
@@ -271,7 +188,7 @@ public class MainView extends javax.swing.JFrame {
                 btn_startSequentialMouseEntered(evt);
             }
         });
-        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 300, 160, 60));
+        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 300, 160, 60));
 
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_sequentialTime.setForeground(new java.awt.Color(218, 218, 218));
@@ -283,6 +200,18 @@ public class MainView extends javax.swing.JFrame {
         lbl_concurrentTime.setText("Time:");
         pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, -1, 40));
 
+        jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        txtArea_concurrent.setEditable(false);
+        txtArea_concurrent.setBackground(new java.awt.Color(11, 12, 16));
+        txtArea_concurrent.setColumns(20);
+        txtArea_concurrent.setForeground(new java.awt.Color(255, 255, 255));
+        txtArea_concurrent.setRows(5);
+        txtArea_concurrent.setPreferredSize(new java.awt.Dimension(220, 66));
+        jScrollPane6.setViewportView(txtArea_concurrent);
+
+        pnl_background.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 540, 390, 440));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -291,7 +220,7 @@ public class MainView extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnl_background, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1100, Short.MAX_VALUE)
+            .addComponent(pnl_background, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1080, Short.MAX_VALUE)
         );
 
         pack();
@@ -305,6 +234,20 @@ public class MainView extends javax.swing.JFrame {
     private void btn_startSequentialMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_startSequentialMouseEntered
         // TODO add your handling code here:
     }//GEN-LAST:event_btn_startSequentialMouseEntered
+
+    private void btn_clearMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clearMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_clearMouseEntered
+
+    private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
+        FileDeleter fileDeleter = new FileDeleter();
+        String folderPath = "src/images/input_images/";
+        fileDeleter.deleteAllFilesInFolder(folderPath);
+    }//GEN-LAST:event_btn_clearActionPerformed
+
+    private void btn_startConcurrentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startConcurrentActionPerformed
+
+    }//GEN-LAST:event_btn_startConcurrentActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,33 +290,20 @@ public class MainView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btn_clear;
     public javax.swing.JButton btn_startConcurrent;
     public javax.swing.JButton btn_startSequential;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JLabel lbl_concurrent;
     private javax.swing.JLabel lbl_concurrentTime;
     private javax.swing.JLabel lbl_sequential;
     private javax.swing.JLabel lbl_sequentialTime;
-    private javax.swing.JLabel lbl_thread1;
-    private javax.swing.JLabel lbl_thread2;
-    private javax.swing.JLabel lbl_thread3;
-    private javax.swing.JLabel lbl_thread4;
     private javax.swing.JLabel lbl_title;
     private javax.swing.JPanel pnl_background;
     private javax.swing.JPanel pnl_header;
-    private javax.swing.JPanel pnl_thread1;
-    private javax.swing.JPanel pnl_thread2;
-    private javax.swing.JPanel pnl_thread3;
-    private javax.swing.JPanel pnl_thread4;
+    public javax.swing.JTextArea txtArea_concurrent;
     public javax.swing.JTextArea txtArea_sequential;
-    public javax.swing.JTextArea txtArea_thread1;
-    public javax.swing.JTextArea txtArea_thread2;
-    public javax.swing.JTextArea txtArea_thread3;
-    public javax.swing.JTextArea txtArea_thread4;
     // End of variables declaration//GEN-END:variables
 }

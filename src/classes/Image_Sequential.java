@@ -1,5 +1,5 @@
 
-package models;
+package classes;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

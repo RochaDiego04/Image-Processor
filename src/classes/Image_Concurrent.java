@@ -1,4 +1,4 @@
-package models;
+package classes;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -99,6 +99,7 @@ public class Image_Concurrent {
         }
         return output;
     }
+    
 
     public static void main(String[] args) throws IOException {
         String inputPath = "src/images/input_images/";
@@ -136,8 +137,11 @@ public class Image_Concurrent {
                             e.printStackTrace();
                         }
 
-                        System.out.println("Processed: " + imageFile.getName());
+                        // Get the current thread's name or identifier
+                        String threadName = Thread.currentThread().getName();
+                        System.out.println("Processed: " + imageFile.getName() + " by thread " + threadName);
                     });
+
                 }
             }
 
@@ -148,8 +152,8 @@ public class Image_Concurrent {
                 e.printStackTrace();
             }
 
-            long parallelTime = System.currentTimeMillis() - startTime;
-            System.out.println("Parallel time " + parallelTime + "ms");
+            long concurrentTime = System.currentTimeMillis() - startTime;
+            System.out.println("Concurrent time " + concurrentTime + "ms");
         }
     }
 }
