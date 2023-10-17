@@ -93,6 +93,8 @@ public class MainView extends javax.swing.JFrame {
         lbl_concurrentTime = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         txtArea_concurrent = new javax.swing.JTextArea();
+        lbl_totalConcurrentTime = new javax.swing.JLabel();
+        lbl_totalSequentialTime = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -225,15 +227,15 @@ public class MainView extends javax.swing.JFrame {
         });
         pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 300, 160, 60));
 
-        lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
-        lbl_sequentialTime.setForeground(new java.awt.Color(218, 218, 218));
-        lbl_sequentialTime.setText("Time:");
-        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 420, -1, 40));
+        lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
+        lbl_sequentialTime.setForeground(new java.awt.Color(189, 189, 189));
+        lbl_sequentialTime.setText("Time Millis:");
+        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 420, -1, 40));
 
-        lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
-        lbl_concurrentTime.setForeground(new java.awt.Color(218, 218, 218));
-        lbl_concurrentTime.setText("Time:");
-        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, -1, 40));
+        lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
+        lbl_concurrentTime.setForeground(new java.awt.Color(189, 189, 189));
+        lbl_concurrentTime.setText("Time Millis:");
+        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, -1, 40));
 
         jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -246,6 +248,16 @@ public class MainView extends javax.swing.JFrame {
         jScrollPane6.setViewportView(txtArea_concurrent);
 
         pnl_background.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 540, 390, 440));
+
+        lbl_totalConcurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lbl_totalConcurrentTime.setForeground(new java.awt.Color(218, 218, 218));
+        lbl_totalConcurrentTime.setText("0ms");
+        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 420, 250, 40));
+
+        lbl_totalSequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lbl_totalSequentialTime.setForeground(new java.awt.Color(218, 218, 218));
+        lbl_totalSequentialTime.setText("0ms");
+        pnl_background.add(lbl_totalSequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 420, 250, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -281,6 +293,8 @@ public class MainView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_clear_inputActionPerformed
 
     private void btn_startConcurrentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startConcurrentActionPerformed
+        this.txtArea_concurrent.setText(""); //reseting the textArea
+        
         String inputPath = "src/images/input_images/";
         String outputPath = "src/images/output_images/";
 
@@ -318,7 +332,7 @@ public class MainView extends javax.swing.JFrame {
 
                         // Get the current thread's name or identifier
                         String threadName = Thread.currentThread().getName();
-                        System.out.println("Processed: " + imageFile.getName() + " by thread " + threadName);
+                        this.txtArea_concurrent.append("Processed: " + imageFile.getName() + " by thread " + threadName + "\n");
                     });
 
                 }
@@ -332,11 +346,14 @@ public class MainView extends javax.swing.JFrame {
             }
 
             long concurrentTime = System.currentTimeMillis() - startTime;
-            System.out.println("Concurrent time " + concurrentTime + "ms");
+            this.lbl_totalConcurrentTime.setText(concurrentTime + "ms");
+            System.out.println("Finished");
         }
     }//GEN-LAST:event_btn_startConcurrentActionPerformed
 
     private void btn_startSequentialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startSequentialActionPerformed
+        this.txtArea_sequential.setText(""); //reseting the textArea
+        
         String inputPath = "src/images/input_images/";
         String outputPath = "src/images/output_images/";
 
@@ -366,14 +383,14 @@ public class MainView extends javax.swing.JFrame {
                     } catch (IOException ex) {
                         Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
-                    System.out.println("Processed: " + imageFile.getName());
+                    this.txtArea_sequential.append("Processed: " + imageFile.getName() + "\n");
                 }
             }
         }
        
         long sequentialTime  = System.currentTimeMillis() - startTime; // Finisihing task timing
-        System.out.println("Sequential time " + sequentialTime + "ms");
+        this.lbl_totalSequentialTime.setText(sequentialTime + "ms");
+        System.out.println("Finished");
     }//GEN-LAST:event_btn_startSequentialActionPerformed
 
     private void btn_clear_outputMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clear_outputMouseEntered
@@ -439,6 +456,8 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_sequential;
     private javax.swing.JLabel lbl_sequentialTime;
     private javax.swing.JLabel lbl_title;
+    private javax.swing.JLabel lbl_totalConcurrentTime;
+    private javax.swing.JLabel lbl_totalSequentialTime;
     private javax.swing.JPanel pnl_background;
     private javax.swing.JPanel pnl_header;
     public javax.swing.JTextArea txtArea_concurrent;
