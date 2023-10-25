@@ -31,42 +31,64 @@ import javax.imageio.ImageIO;
  * @author Diego
  */
 public class MainView extends javax.swing.JFrame {
-
+    private int imageCount = 0; 
     /**
      * Creates new form MainView
      */
     public MainView() {
         initComponents();
-    //////////////////////////////////////////////////////////////    
-    // Associate a DropTarget to jLabel1
-    DropTarget dropTarget = new DropTarget(jLabel1, DnDConstants.ACTION_COPY, new DropTargetAdapter() {
-    @Override
-    public void drop(DropTargetDropEvent event) {
-        event.acceptDrop(DnDConstants.ACTION_COPY);
-        Transferable transferable = event.getTransferable();
-        try {
-            List<File> files = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-            for (File file : files) {
-                // Verify if file is an image before copying it
-                if (isImageFile(file)) {
-                    // Define destination folder (images.output_images)
-                    File destinationFolder = new File("src/images/input_images");
-                    destinationFolder.mkdirs();
+        initializeImageCount(); 
+        setupImageDropListener();
+    }
+    
+    private void initializeImageCount() {
+        // Initialize the image count based on the number of images in input_images folder
+        File inputDirectory = new File("src/images/input_images");
+        File[] imageFiles = inputDirectory.listFiles();
+        if (imageFiles != null) {
+            imageCount = imageFiles.length;
+        }
+        updateImageCountLabel();
+    }
+    
+    private void setupImageDropListener() {
+        // Create a DropTarget to handle image drops
+        DropTarget dropTarget = new DropTarget(jLabel1, DnDConstants.ACTION_COPY, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetDropEvent event) {
+                event.acceptDrop(DnDConstants.ACTION_COPY);
+                Transferable transferable = event.getTransferable();
+                try {
+                    List<File> files = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    for (File file : files) {
+                        // Verify if file is an image before copying it
+                        if (isImageFile(file)) {
+                            // Define destination folder (images.input_images)
+                            File destinationFolder = new File("src/images/input_images");
+                            destinationFolder.mkdirs();
 
-                    // Copy the file into the destination folder
-                    Path sourcePath = file.toPath();
-                    Path destinationPath = new File(destinationFolder, file.getName()).toPath();
-                    Files.copy(sourcePath, destinationPath);
+                            // Copy the file into the destination folder
+                            Path sourcePath = file.toPath();
+                            Path destinationPath = new File(destinationFolder, file.getName()).toPath();
+                            Files.copy(sourcePath, destinationPath);
+
+                            // Increment the image count when a new image is added
+                            imageCount++;
+                            updateImageCountLabel();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+        jLabel1.setDropTarget(dropTarget);
     }
-    });
-    jLabel1.setDropTarget(dropTarget);
+
+    private void updateImageCountLabel() {
+        lbl_numberImgSequential.setText(Integer.toString(imageCount));
     }
-    //////////////////////////////////////////////////////////////   
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -95,6 +117,8 @@ public class MainView extends javax.swing.JFrame {
         txtArea_concurrent = new javax.swing.JTextArea();
         lbl_totalConcurrentTime = new javax.swing.JLabel();
         lbl_totalSequentialTime = new javax.swing.JLabel();
+        lbl_ImagesSequential = new javax.swing.JLabel();
+        lbl_numberImgSequential = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -131,6 +155,7 @@ public class MainView extends javax.swing.JFrame {
         btn_clear_input.setAlignmentX(0.5F);
         btn_clear_input.setBorderPainted(false);
         btn_clear_input.setFocusPainted(false);
+        btn_clear_input.setSelected(true);
         btn_clear_input.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn_clear_inputMouseEntered(evt);
@@ -151,6 +176,7 @@ public class MainView extends javax.swing.JFrame {
         btn_clear_output.setAlignmentX(0.5F);
         btn_clear_output.setBorderPainted(false);
         btn_clear_output.setFocusPainted(false);
+        btn_clear_output.setSelected(true);
         btn_clear_output.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn_clear_outputMouseEntered(evt);
@@ -168,12 +194,12 @@ public class MainView extends javax.swing.JFrame {
         lbl_concurrent.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_concurrent.setForeground(new java.awt.Color(218, 218, 218));
         lbl_concurrent.setText("Concurrent");
-        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 260, -1, -1));
+        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 300, -1, -1));
 
         lbl_sequential.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_sequential.setForeground(new java.awt.Color(218, 218, 218));
         lbl_sequential.setText("Sequential");
-        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 260, -1, -1));
+        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 300, -1, -1));
 
         jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -195,6 +221,7 @@ public class MainView extends javax.swing.JFrame {
         btn_startConcurrent.setAlignmentX(0.5F);
         btn_startConcurrent.setBorderPainted(false);
         btn_startConcurrent.setFocusPainted(false);
+        btn_startConcurrent.setSelected(true);
         btn_startConcurrent.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn_startConcurrentMouseEntered(evt);
@@ -205,7 +232,7 @@ public class MainView extends javax.swing.JFrame {
                 btn_startConcurrentActionPerformed(evt);
             }
         });
-        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 300, 160, 60));
+        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 350, 160, 60));
 
         btn_startSequential.setBackground(new java.awt.Color(71, 104, 104));
         btn_startSequential.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -215,6 +242,7 @@ public class MainView extends javax.swing.JFrame {
         btn_startSequential.setAlignmentX(0.5F);
         btn_startSequential.setBorderPainted(false);
         btn_startSequential.setFocusPainted(false);
+        btn_startSequential.setSelected(true);
         btn_startSequential.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn_startSequentialMouseEntered(evt);
@@ -225,17 +253,17 @@ public class MainView extends javax.swing.JFrame {
                 btn_startSequentialActionPerformed(evt);
             }
         });
-        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 300, 160, 60));
+        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 340, 160, 60));
 
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_sequentialTime.setForeground(new java.awt.Color(189, 189, 189));
         lbl_sequentialTime.setText("Time Millis:");
-        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 420, -1, 40));
+        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 470, -1, 40));
 
         lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_concurrentTime.setForeground(new java.awt.Color(189, 189, 189));
         lbl_concurrentTime.setText("Time Millis:");
-        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, -1, 40));
+        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, -1, 40));
 
         jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -250,14 +278,24 @@ public class MainView extends javax.swing.JFrame {
         pnl_background.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 540, 390, 440));
 
         lbl_totalConcurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
-        lbl_totalConcurrentTime.setForeground(new java.awt.Color(218, 218, 218));
+        lbl_totalConcurrentTime.setForeground(new java.awt.Color(196, 198, 218));
         lbl_totalConcurrentTime.setText("0ms");
-        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 420, 250, 40));
+        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 470, 210, 40));
 
         lbl_totalSequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
-        lbl_totalSequentialTime.setForeground(new java.awt.Color(218, 218, 218));
+        lbl_totalSequentialTime.setForeground(new java.awt.Color(196, 198, 218));
         lbl_totalSequentialTime.setText("0ms");
-        pnl_background.add(lbl_totalSequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 420, 250, 40));
+        pnl_background.add(lbl_totalSequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 470, 220, 40));
+
+        lbl_ImagesSequential.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
+        lbl_ImagesSequential.setForeground(new java.awt.Color(189, 189, 189));
+        lbl_ImagesSequential.setText("No. of Images:");
+        pnl_background.add(lbl_ImagesSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, -1, 40));
+
+        lbl_numberImgSequential.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lbl_numberImgSequential.setForeground(new java.awt.Color(196, 198, 218));
+        lbl_numberImgSequential.setText("0");
+        pnl_background.add(lbl_numberImgSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 220, 210, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -290,6 +328,8 @@ public class MainView extends javax.swing.JFrame {
         FileDeleter fileDeleter = new FileDeleter();
         String folderPath = "src/images/input_images/";
         fileDeleter.deleteAllFilesInFolder(folderPath);
+        imageCount = 0;
+        lbl_numberImgSequential.setText(Integer.toString(imageCount));
     }//GEN-LAST:event_btn_clear_inputActionPerformed
 
     private void btn_startConcurrentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startConcurrentActionPerformed
@@ -451,8 +491,10 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JLabel lbl_ImagesSequential;
     private javax.swing.JLabel lbl_concurrent;
     private javax.swing.JLabel lbl_concurrentTime;
+    private javax.swing.JLabel lbl_numberImgSequential;
     private javax.swing.JLabel lbl_sequential;
     private javax.swing.JLabel lbl_sequentialTime;
     private javax.swing.JLabel lbl_title;
