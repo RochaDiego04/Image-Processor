@@ -1,8 +1,10 @@
 package views;
 
+import classes.ClientImpl;
 import classes.FileDeleter;
 import classes.Image_Concurrent;
 import classes.Image_Sequential;
+import classes.ServerImpl;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 
 
@@ -31,14 +35,24 @@ import javax.imageio.ImageIO;
  * @author Diego
  */
 public class MainView extends javax.swing.JFrame {
-    private int imageCount = 0; 
-    /**
-     * Creates new form MainView
-     */
-    public MainView() {
+    private int imageCount = 0;
+    
+    ServerImpl imgProcessorServer;
+    ClientImpl imgProcessorClient;
+    
+    // required properties:
+    String NombreUsuario;
+
+    
+    public MainView() throws RemoteException {
+        this.imgProcessorServer = new ServerImpl();
+        this.imgProcessorClient = new ClientImpl();
+        
         initComponents();
         initializeImageCount(); 
         setupImageDropListener();
+        
+        btn_startRMI.setEnabled(false);
     }
     
     private void initializeImageCount() {
@@ -119,12 +133,18 @@ public class MainView extends javax.swing.JFrame {
         lbl_totalSequentialTime = new javax.swing.JLabel();
         lbl_ImagesSequential = new javax.swing.JLabel();
         lbl_numberImgSequential = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        lbl_sequential1 = new javax.swing.JLabel();
+        btn_openServer = new javax.swing.JButton();
+        btn_registerUser = new javax.swing.JButton();
+        btn_startRMI = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setResizable(false);
 
         pnl_background.setBackground(new java.awt.Color(39, 42, 55));
+        pnl_background.setMinimumSize(new java.awt.Dimension(1080, 980));
         pnl_background.setPreferredSize(new java.awt.Dimension(800, 900));
         pnl_background.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -139,13 +159,13 @@ public class MainView extends javax.swing.JFrame {
         jLabel1.setText("Drop your image files here");
         jLabel1.setToolTipText("");
         jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(102, 153, 255), null, new java.awt.Color(115, 117, 146)));
-        pnl_header.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 480, 90));
+        pnl_header.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 480, 90));
 
         lbl_title.setFont(new java.awt.Font("Microsoft New Tai Lue", 1, 36)); // NOI18N
         lbl_title.setForeground(new java.awt.Color(255, 255, 255));
         lbl_title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbl_title.setText("Image Binarizer");
-        pnl_header.add(lbl_title, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 470, 60));
+        pnl_header.add(lbl_title, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, 460, 60));
 
         btn_clear_input.setBackground(new java.awt.Color(45, 45, 82));
         btn_clear_input.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -166,7 +186,7 @@ public class MainView extends javax.swing.JFrame {
                 btn_clear_inputActionPerformed(evt);
             }
         });
-        pnl_header.add(btn_clear_input, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 90, 130, 40));
+        pnl_header.add(btn_clear_input, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 90, 130, 40));
 
         btn_clear_output.setBackground(new java.awt.Color(60, 44, 82));
         btn_clear_output.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -187,19 +207,19 @@ public class MainView extends javax.swing.JFrame {
                 btn_clear_outputActionPerformed(evt);
             }
         });
-        pnl_header.add(btn_clear_output, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 140, 130, 40));
+        pnl_header.add(btn_clear_output, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 140, 130, 40));
 
-        pnl_background.add(pnl_header, new org.netbeans.lib.awtextra.AbsoluteConstraints(-4, -6, 910, 210));
+        pnl_background.add(pnl_header, new org.netbeans.lib.awtextra.AbsoluteConstraints(-4, -6, 800, 210));
 
         lbl_concurrent.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_concurrent.setForeground(new java.awt.Color(218, 218, 218));
         lbl_concurrent.setText("Concurrent");
-        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 300, -1, -1));
+        pnl_background.add(lbl_concurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
 
         lbl_sequential.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_sequential.setForeground(new java.awt.Color(218, 218, 218));
         lbl_sequential.setText("Sequential");
-        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 300, -1, -1));
+        pnl_background.add(lbl_sequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 320, -1, -1));
 
         jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -211,7 +231,7 @@ public class MainView extends javax.swing.JFrame {
         txtArea_sequential.setPreferredSize(new java.awt.Dimension(220, 66));
         jScrollPane5.setViewportView(txtArea_sequential);
 
-        pnl_background.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 540, 390, 440));
+        pnl_background.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 540, 330, 440));
 
         btn_startConcurrent.setBackground(new java.awt.Color(71, 104, 104));
         btn_startConcurrent.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -232,7 +252,7 @@ public class MainView extends javax.swing.JFrame {
                 btn_startConcurrentActionPerformed(evt);
             }
         });
-        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 350, 160, 60));
+        pnl_background.add(btn_startConcurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 410, 160, 40));
 
         btn_startSequential.setBackground(new java.awt.Color(71, 104, 104));
         btn_startSequential.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -253,17 +273,17 @@ public class MainView extends javax.swing.JFrame {
                 btn_startSequentialActionPerformed(evt);
             }
         });
-        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 340, 160, 60));
+        pnl_background.add(btn_startSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 400, 160, 40));
 
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_sequentialTime.setForeground(new java.awt.Color(189, 189, 189));
         lbl_sequentialTime.setText("Time Millis:");
-        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 470, -1, 40));
+        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 470, -1, 40));
 
         lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_concurrentTime.setForeground(new java.awt.Color(189, 189, 189));
         lbl_concurrentTime.setText("Time Millis:");
-        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, -1, 40));
+        pnl_background.add(lbl_concurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, -1, 40));
 
         jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -275,37 +295,142 @@ public class MainView extends javax.swing.JFrame {
         txtArea_concurrent.setPreferredSize(new java.awt.Dimension(220, 66));
         jScrollPane6.setViewportView(txtArea_concurrent);
 
-        pnl_background.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 540, 390, 440));
+        pnl_background.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 540, 340, 440));
 
         lbl_totalConcurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_totalConcurrentTime.setForeground(new java.awt.Color(196, 198, 218));
         lbl_totalConcurrentTime.setText("0ms");
-        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 470, 210, 40));
+        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 470, 160, 40));
 
         lbl_totalSequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_totalSequentialTime.setForeground(new java.awt.Color(196, 198, 218));
         lbl_totalSequentialTime.setText("0ms");
-        pnl_background.add(lbl_totalSequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 470, 220, 40));
+        pnl_background.add(lbl_totalSequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 470, 170, 40));
 
         lbl_ImagesSequential.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_ImagesSequential.setForeground(new java.awt.Color(189, 189, 189));
         lbl_ImagesSequential.setText("No. of Images:");
-        pnl_background.add(lbl_ImagesSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, -1, 40));
+        pnl_background.add(lbl_ImagesSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 220, -1, 40));
 
         lbl_numberImgSequential.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_numberImgSequential.setForeground(new java.awt.Color(196, 198, 218));
         lbl_numberImgSequential.setText("0");
         pnl_background.add(lbl_numberImgSequential, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 220, 210, 40));
 
+        jPanel1.setBackground(new java.awt.Color(21, 22, 29));
+
+        lbl_sequential1.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lbl_sequential1.setForeground(new java.awt.Color(218, 218, 218));
+        lbl_sequential1.setText("RMI");
+
+        btn_openServer.setBackground(new java.awt.Color(71, 104, 104));
+        btn_openServer.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btn_openServer.setForeground(new java.awt.Color(255, 255, 255));
+        btn_openServer.setText("Open Server");
+        btn_openServer.setToolTipText("");
+        btn_openServer.setAlignmentX(0.5F);
+        btn_openServer.setBorderPainted(false);
+        btn_openServer.setFocusPainted(false);
+        btn_openServer.setSelected(true);
+        btn_openServer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_openServerMouseEntered(evt);
+            }
+        });
+        btn_openServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_openServerActionPerformed(evt);
+            }
+        });
+
+        btn_registerUser.setBackground(new java.awt.Color(71, 104, 104));
+        btn_registerUser.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btn_registerUser.setForeground(new java.awt.Color(255, 255, 255));
+        btn_registerUser.setText("Register User");
+        btn_registerUser.setToolTipText("");
+        btn_registerUser.setAlignmentX(0.5F);
+        btn_registerUser.setBorderPainted(false);
+        btn_registerUser.setFocusPainted(false);
+        btn_registerUser.setSelected(true);
+        btn_registerUser.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_registerUserMouseEntered(evt);
+            }
+        });
+        btn_registerUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_registerUserActionPerformed(evt);
+            }
+        });
+
+        btn_startRMI.setBackground(new java.awt.Color(71, 104, 104));
+        btn_startRMI.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btn_startRMI.setForeground(new java.awt.Color(255, 255, 255));
+        btn_startRMI.setText("Start");
+        btn_startRMI.setToolTipText("");
+        btn_startRMI.setAlignmentX(0.5F);
+        btn_startRMI.setBorderPainted(false);
+        btn_startRMI.setFocusPainted(false);
+        btn_startRMI.setSelected(true);
+        btn_startRMI.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_startRMIMouseEntered(evt);
+            }
+        });
+        btn_startRMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_startRMIActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 81, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_registerUser, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                            .addComponent(lbl_sequential1)
+                            .addGap(143, 143, 143))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                            .addComponent(btn_openServer, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(67, 67, 67)))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_startRMI, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(81, 81, 81))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(52, 52, 52)
+                .addComponent(lbl_sequential1)
+                .addGap(18, 18, 18)
+                .addComponent(btn_openServer)
+                .addGap(18, 18, 18)
+                .addComponent(btn_registerUser)
+                .addGap(51, 51, 51)
+                .addComponent(btn_startRMI)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnl_background, javax.swing.GroupLayout.PREFERRED_SIZE, 899, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnl_background, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnl_background, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1080, Short.MAX_VALUE)
+            .addComponent(pnl_background, javax.swing.GroupLayout.DEFAULT_SIZE, 1080, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -345,15 +470,16 @@ public class MainView extends javax.swing.JFrame {
         if (!outputDirectory.exists()) {
             outputDirectory.mkdirs();
         }
+        
+        long startTime = System.currentTimeMillis();
 
         File[] imageFiles = inputDirectory.listFiles();
 
         if (imageFiles != null) {
-            int numThreads = Runtime.getRuntime().availableProcessors(); // Get the number of available cores
+            int numThreads = 2;
 
             ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-            long startTime = System.currentTimeMillis();
 
             for (File imageFile : imageFiles) {
                 if (imageFile.isFile()) {
@@ -443,6 +569,47 @@ public class MainView extends javax.swing.JFrame {
         fileDeleter.deleteAllFilesInFolder(folderPath);
     }//GEN-LAST:event_btn_clear_outputActionPerformed
 
+    private void btn_startRMIMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_startRMIMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_startRMIMouseEntered
+
+    private void btn_startRMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startRMIActionPerformed
+            String message = "listo";
+
+            try {
+                imgProcessorClient.enviarMensajeGrupal(message, NombreUsuario);
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }//GEN-LAST:event_btn_startRMIActionPerformed
+
+    private void btn_openServerMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_openServerMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_openServerMouseEntered
+
+    private void btn_openServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openServerActionPerformed
+        String Ip = JOptionPane.showInputDialog(rootPane, "Type the IP direction that server will have", "Server", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            imgProcessorServer.EstablecerConexion(Ip);
+            JOptionPane.showConfirmDialog(rootPane, "Server connected! congrats :D");
+        } catch (Exception ex) {
+            System.out.println("Something went wrong openning the server");
+            System.out.println(ex);
+        }
+    }//GEN-LAST:event_btn_openServerActionPerformed
+
+    private void btn_registerUserMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_registerUserMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_registerUserMouseEntered
+
+    private void btn_registerUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerUserActionPerformed
+        String Ip = JOptionPane.showInputDialog(rootPane, "Escribe la ip del servidor", "Usuario Nuevo", JOptionPane.INFORMATION_MESSAGE);
+        NombreUsuario = JOptionPane.showInputDialog(rootPane, "Escribe el Nombre de registro: ", "Usuario Nuevo", JOptionPane.INFORMATION_MESSAGE);
+        imgProcessorClient = new ClientImpl();
+        imgProcessorClient.ComenzarCliente(NombreUsuario, Ip);
+        btn_startRMI.setEnabled(true);
+    }//GEN-LAST:event_btn_registerUserActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -473,7 +640,11 @@ public class MainView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainView().setVisible(true);
+                try {
+                    new MainView().setVisible(true);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -486,9 +657,13 @@ public class MainView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btn_clear_input;
     public javax.swing.JButton btn_clear_output;
+    public javax.swing.JButton btn_openServer;
+    public javax.swing.JButton btn_registerUser;
     public javax.swing.JButton btn_startConcurrent;
+    public javax.swing.JButton btn_startRMI;
     public javax.swing.JButton btn_startSequential;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JLabel lbl_ImagesSequential;
@@ -496,6 +671,7 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_concurrentTime;
     private javax.swing.JLabel lbl_numberImgSequential;
     private javax.swing.JLabel lbl_sequential;
+    private javax.swing.JLabel lbl_sequential1;
     private javax.swing.JLabel lbl_sequentialTime;
     private javax.swing.JLabel lbl_title;
     private javax.swing.JLabel lbl_totalConcurrentTime;
