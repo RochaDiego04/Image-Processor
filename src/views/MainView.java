@@ -1,10 +1,11 @@
 package views;
 
-import classes.ClientImpl;
+import classes.Cliente;
 import classes.FileDeleter;
 import classes.Image_Concurrent;
 import classes.Image_Sequential;
-import classes.ServerImpl;
+import classes.Service;
+import classes.Servidor;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
@@ -35,19 +36,14 @@ import javax.swing.JOptionPane;
  * @author Diego
  */
 public class MainView extends javax.swing.JFrame {
+    Servidor server;
+    Cliente client;
+    Service service;
     private int imageCount = 0;
     
-    ServerImpl imgProcessorServer;
-    ClientImpl imgProcessorClient;
-    
-    // required properties:
-    String NombreUsuario;
-
-    
     public MainView() throws RemoteException {
-        this.imgProcessorServer = new ServerImpl();
-        this.imgProcessorClient = new ClientImpl();
-        
+        this.client = new Cliente();
+        this.server = new Servidor();
         initComponents();
         initializeImageCount(); 
         setupImageDropListener();
@@ -141,7 +137,6 @@ public class MainView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
-        setResizable(false);
 
         pnl_background.setBackground(new java.awt.Color(39, 42, 55));
         pnl_background.setMinimumSize(new java.awt.Dimension(1080, 980));
@@ -242,11 +237,6 @@ public class MainView extends javax.swing.JFrame {
         btn_startConcurrent.setBorderPainted(false);
         btn_startConcurrent.setFocusPainted(false);
         btn_startConcurrent.setSelected(true);
-        btn_startConcurrent.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_startConcurrentMouseEntered(evt);
-            }
-        });
         btn_startConcurrent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_startConcurrentActionPerformed(evt);
@@ -263,11 +253,6 @@ public class MainView extends javax.swing.JFrame {
         btn_startSequential.setBorderPainted(false);
         btn_startSequential.setFocusPainted(false);
         btn_startSequential.setSelected(true);
-        btn_startSequential.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_startSequentialMouseEntered(evt);
-            }
-        });
         btn_startSequential.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_startSequentialActionPerformed(evt);
@@ -332,11 +317,6 @@ public class MainView extends javax.swing.JFrame {
         btn_openServer.setBorderPainted(false);
         btn_openServer.setFocusPainted(false);
         btn_openServer.setSelected(true);
-        btn_openServer.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_openServerMouseEntered(evt);
-            }
-        });
         btn_openServer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_openServerActionPerformed(evt);
@@ -352,11 +332,6 @@ public class MainView extends javax.swing.JFrame {
         btn_registerUser.setBorderPainted(false);
         btn_registerUser.setFocusPainted(false);
         btn_registerUser.setSelected(true);
-        btn_registerUser.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_registerUserMouseEntered(evt);
-            }
-        });
         btn_registerUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_registerUserActionPerformed(evt);
@@ -372,11 +347,6 @@ public class MainView extends javax.swing.JFrame {
         btn_startRMI.setBorderPainted(false);
         btn_startRMI.setFocusPainted(false);
         btn_startRMI.setSelected(true);
-        btn_startRMI.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn_startRMIMouseEntered(evt);
-            }
-        });
         btn_startRMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_startRMIActionPerformed(evt);
@@ -436,14 +406,6 @@ public class MainView extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btn_startConcurrentMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_startConcurrentMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_startConcurrentMouseEntered
-
-    private void btn_startSequentialMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_startSequentialMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_startSequentialMouseEntered
 
     private void btn_clear_inputMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_clear_inputMouseEntered
         // TODO add your handling code here:
@@ -569,45 +531,21 @@ public class MainView extends javax.swing.JFrame {
         fileDeleter.deleteAllFilesInFolder(folderPath);
     }//GEN-LAST:event_btn_clear_outputActionPerformed
 
-    private void btn_startRMIMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_startRMIMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_startRMIMouseEntered
-
     private void btn_startRMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startRMIActionPerformed
-            String message = "listo";
 
-            try {
-                imgProcessorClient.enviarMensajeGrupal(message, NombreUsuario);
-            } catch (RemoteException ex) {
-                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-            }
     }//GEN-LAST:event_btn_startRMIActionPerformed
 
-    private void btn_openServerMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_openServerMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_openServerMouseEntered
-
     private void btn_openServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openServerActionPerformed
-        String Ip = JOptionPane.showInputDialog(rootPane, "Type the IP direction that server will have", "Server", JOptionPane.INFORMATION_MESSAGE);
-        try {
-            imgProcessorServer.EstablecerConexion(Ip);
-            JOptionPane.showConfirmDialog(rootPane, "Server connected! congrats :D");
-        } catch (Exception ex) {
-            System.out.println("Something went wrong openning the server");
-            System.out.println(ex);
-        }
+        String Ip=JOptionPane.showInputDialog(rootPane, "Type yout ip", "Server", HEIGHT);
+        System.out.println(Ip);
+        service = server.connect(Ip, server);
     }//GEN-LAST:event_btn_openServerActionPerformed
 
-    private void btn_registerUserMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_registerUserMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_registerUserMouseEntered
-
     private void btn_registerUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerUserActionPerformed
-        String Ip = JOptionPane.showInputDialog(rootPane, "Escribe la ip del servidor", "Usuario Nuevo", JOptionPane.INFORMATION_MESSAGE);
-        NombreUsuario = JOptionPane.showInputDialog(rootPane, "Escribe el Nombre de registro: ", "Usuario Nuevo", JOptionPane.INFORMATION_MESSAGE);
-        imgProcessorClient = new ClientImpl();
-        imgProcessorClient.ComenzarCliente(NombreUsuario, Ip);
-        btn_startRMI.setEnabled(true);
+        client = new Cliente();
+
+        String Ip=JOptionPane.showInputDialog(rootPane, "Escribe la ip del servidor", "Cliente", HEIGHT);
+        client.connect(Ip, service);
     }//GEN-LAST:event_btn_registerUserActionPerformed
 
     /**
