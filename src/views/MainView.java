@@ -532,13 +532,18 @@ public class MainView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_clear_outputActionPerformed
 
     private void btn_startRMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startRMIActionPerformed
-
+        try {
+            service.sendSignalBinarizeImages();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_startRMIActionPerformed
 
     private void btn_openServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openServerActionPerformed
         String Ip=JOptionPane.showInputDialog(rootPane, "Type yout ip", "Server", HEIGHT);
         System.out.println(Ip);
         service = server.connect(Ip, server);
+        btn_startRMI.setEnabled(true);
     }//GEN-LAST:event_btn_openServerActionPerformed
 
     private void btn_registerUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerUserActionPerformed

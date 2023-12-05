@@ -15,13 +15,7 @@ public class ClientCallbackImpl extends UnicastRemoteObject implements ClientCal
 
     @Override
     public void receiveMessage(String message) throws RemoteException {
-        /*SwingUtilities.invokeLater(() -> {
-            if (jTextArea != null) {
-                jTextArea.append(message + "\n");
-            } else {
-                System.out.println("JTextArea not set for user: " + username);
-            }
-        });*/
+        System.out.println("Received message: " + message);
     }
 
 
