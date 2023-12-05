@@ -60,7 +60,7 @@ public class Servidor extends UnicastRemoteObject implements Service {
             try {
                 byte[] imageData = binarizedImages.get(i);
                 BufferedImage image = ImageUtils.convertBytesToImage(imageData);
-                String outputImagePath = "src/images/output_images/output_image_" + i + ".jpg";
+                String outputImagePath = "src/images/output_images/client_" + clientId + "_image_" + i + ".jpg";
                 ImageIO.write(image, "jpg", new File(outputImagePath));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,7 +68,7 @@ public class Servidor extends UnicastRemoteObject implements Service {
         }
 
         // Puedes imprimir un mensaje o realizar otras acciones después de recibir las imágenes
-        System.out.println("Received binarized images from Client ID ");
+        System.out.println("Received binarized images from Client ID: " + clientId);
     }
     
     public Service connect(String Ip, Service server) {

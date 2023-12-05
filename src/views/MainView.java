@@ -532,11 +532,14 @@ public class MainView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_clear_outputActionPerformed
 
     private void btn_startRMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startRMIActionPerformed
+        long startTime = System.currentTimeMillis();
         try {
             service.sendSignalBinarizeImages();
         } catch (RemoteException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
+        long RMITime = System.currentTimeMillis() - startTime;
+        System.out.println(RMITime + "ms");
     }//GEN-LAST:event_btn_startRMIActionPerformed
 
     private void btn_openServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openServerActionPerformed
