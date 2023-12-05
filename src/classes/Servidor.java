@@ -1,5 +1,6 @@
 
 package classes;
+import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 
 public class Servidor extends UnicastRemoteObject implements Service {
-    public Map<Integer, String[]> resultadosClientes = new HashMap<>();
+    public Map<Integer,  List<BufferedImage>> resultadosClientes = new HashMap<>();
     public Map<Integer, ClientCallback> clientes;
     private int contadorClientes;
 
@@ -45,12 +46,14 @@ public class Servidor extends UnicastRemoteObject implements Service {
         }
     }
 
-    /*@Override
-    public void broadcastMessage(String message) throws RemoteException {
-        for (ClientCallback client : clients) {
-            client.receiveMessage(message);
-        }
-    }*/
+    @Override
+    public void sendBinarizedImages(int clientId, List<BufferedImage> binarizedImages) throws RemoteException {
+        // Almacena las imágenes en la estructura de datos que desees
+        resultadosClientes.put(clientId, binarizedImages);
+
+        // Puedes imprimir un mensaje o realizar otras acciones después de recibir las imágenes
+        System.out.println("Received binarized images from Client ID " + clientId);
+    }
     
     public Service connect(String Ip, Service server) {
         try {
