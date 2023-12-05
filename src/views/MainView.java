@@ -134,6 +134,8 @@ public class MainView extends javax.swing.JFrame {
         btn_openServer = new javax.swing.JButton();
         btn_registerUser = new javax.swing.JButton();
         btn_startRMI = new javax.swing.JButton();
+        lbl_RMITime = new javax.swing.JLabel();
+        lbl_totalRMITime = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -263,7 +265,7 @@ public class MainView extends javax.swing.JFrame {
         lbl_sequentialTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_sequentialTime.setForeground(new java.awt.Color(189, 189, 189));
         lbl_sequentialTime.setText("Time Millis:");
-        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 470, -1, 40));
+        pnl_background.add(lbl_sequentialTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 470, -1, 40));
 
         lbl_concurrentTime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
         lbl_concurrentTime.setForeground(new java.awt.Color(189, 189, 189));
@@ -285,7 +287,7 @@ public class MainView extends javax.swing.JFrame {
         lbl_totalConcurrentTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_totalConcurrentTime.setForeground(new java.awt.Color(196, 198, 218));
         lbl_totalConcurrentTime.setText("0ms");
-        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 470, 160, 40));
+        pnl_background.add(lbl_totalConcurrentTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 470, 180, 40));
 
         lbl_totalSequentialTime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         lbl_totalSequentialTime.setForeground(new java.awt.Color(196, 198, 218));
@@ -353,6 +355,14 @@ public class MainView extends javax.swing.JFrame {
             }
         });
 
+        lbl_RMITime.setFont(new java.awt.Font("Dialog", 3, 24)); // NOI18N
+        lbl_RMITime.setForeground(new java.awt.Color(189, 189, 189));
+        lbl_RMITime.setText("Time Millis:");
+
+        lbl_totalRMITime.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lbl_totalRMITime.setForeground(new java.awt.Color(196, 198, 218));
+        lbl_totalRMITime.setText("0ms");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -360,14 +370,20 @@ public class MainView extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 81, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_registerUser, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                             .addComponent(lbl_sequential1)
                             .addGap(143, 143, 143))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                             .addComponent(btn_openServer, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(67, 67, 67)))))
+                            .addGap(67, 67, 67)))
+                    .addComponent(btn_registerUser, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(lbl_RMITime)
+                .addGap(18, 18, 18)
+                .addComponent(lbl_totalRMITime, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btn_startRMI, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -384,6 +400,10 @@ public class MainView extends javax.swing.JFrame {
                 .addComponent(btn_registerUser)
                 .addGap(51, 51, 51)
                 .addComponent(btn_startRMI)
+                .addGap(58, 58, 58)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_RMITime, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_totalRMITime, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -539,7 +559,7 @@ public class MainView extends javax.swing.JFrame {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
         long RMITime = System.currentTimeMillis() - startTime;
-        System.out.println(RMITime + "ms");
+        this.lbl_totalRMITime.setText(RMITime + "ms");
     }//GEN-LAST:event_btn_startRMIActionPerformed
 
     private void btn_openServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openServerActionPerformed
@@ -613,6 +633,7 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JLabel lbl_ImagesSequential;
+    private javax.swing.JLabel lbl_RMITime;
     private javax.swing.JLabel lbl_concurrent;
     private javax.swing.JLabel lbl_concurrentTime;
     private javax.swing.JLabel lbl_numberImgSequential;
@@ -621,6 +642,7 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_sequentialTime;
     private javax.swing.JLabel lbl_title;
     private javax.swing.JLabel lbl_totalConcurrentTime;
+    private javax.swing.JLabel lbl_totalRMITime;
     private javax.swing.JLabel lbl_totalSequentialTime;
     private javax.swing.JPanel pnl_background;
     private javax.swing.JPanel pnl_header;

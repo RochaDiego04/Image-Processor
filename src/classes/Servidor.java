@@ -12,6 +12,9 @@ import java.rmi.registry.Registry;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 
 
@@ -53,22 +56,34 @@ public class Servidor extends UnicastRemoteObject implements Service {
 
     @Override
     public void sendBinarizedImages(int clientId, List<byte[]> binarizedImages) throws RemoteException {
-        // Almacena las imágenes en la estructura de datos que desees
         resultadosClientes.put(clientId, binarizedImages);
-        
+
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
         for (int i = 0; i < binarizedImages.size(); i++) {
-            try {
-                byte[] imageData = binarizedImages.get(i);
-                BufferedImage image = ImageUtils.convertBytesToImage(imageData);
-                String outputImagePath = "src/images/output_images/client_" + clientId + "_image_" + i + ".jpg";
-                ImageIO.write(image, "jpg", new File(outputImagePath));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            final int index = i;  // Hacer final a la variable local
+            byte[] imageData = binarizedImages.get(index);
+
+            executor.submit(() -> {
+                try {
+                    BufferedImage image = ImageUtils.convertBytesToImage(imageData);
+                    String outputImagePath = "src/images/output_images/client_" + clientId + "_image_" + index + ".jpg";
+                    ImageIO.write(image, "jpg", new File(outputImagePath));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
 
-        // Puedes imprimir un mensaje o realizar otras acciones después de recibir las imágenes
-        System.out.println("Received binarized images from Client ID: " + clientId);
+        executor.shutdown();
+        // Esperar a que todos los hilos terminen
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Received and saved binarized images from Client ID " + clientId);
     }
     
     public Service connect(String Ip, Service server) {
