@@ -573,7 +573,8 @@ public class MainView extends javax.swing.JFrame {
         client = new Cliente();
 
         String Ip=JOptionPane.showInputDialog(rootPane, "Escribe la ip del servidor", "Cliente", HEIGHT);
-        client.connect(Ip, service);
+        int clientId = client.connect(Ip, service);
+        System.out.println(clientId);
     }//GEN-LAST:event_btn_registerUserActionPerformed
 
     /**

@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 public class ClientCallbackImpl extends UnicastRemoteObject implements ClientCallback {
     
      private int clientId;
+     private Service server;
 
     public ClientCallbackImpl() throws RemoteException {
 
@@ -28,8 +29,9 @@ public class ClientCallbackImpl extends UnicastRemoteObject implements ClientCal
     }
 
     @Override
-    public void receiveMessage(String message) throws RemoteException {
+    public void receiveMessage(String message, Service server) throws RemoteException {
         System.out.println("Received message: " + message);
+        this.server = server;
 
         String inputPath = "src/images/input_images/";
         String outputPath = "src/images/output_images/";
@@ -79,9 +81,8 @@ public class ClientCallbackImpl extends UnicastRemoteObject implements ClientCal
     
     private void sendBinarizedImagesToServer(List<byte[]> binarizedImages) {
         try {
-            Service server = (Service) java.rmi.Naming.lookup("rmi://localhost:9000/ImageProcessor");
-
             server.sendBinarizedImages(clientId, binarizedImages);
+            System.out.println(server);
 
             System.out.println("Binarized images sent to the server.");
         } catch (Exception e) {

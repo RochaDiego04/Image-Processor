@@ -46,7 +46,7 @@ public class Servidor extends UnicastRemoteObject implements Service {
         System.out.println("FUNCION BINARIZAR IMAGENES");
         for (ClientCallback client : clientes.values()) {
             try {
-                client.receiveMessage("Signal to binarize images received.");
+                client.receiveMessage("Signal to binarize images received.", this);
             } catch (RemoteException e) {
                 // Manejar excepciones si no se puede enviar el mensaje a un cliente específico
                 e.printStackTrace();
